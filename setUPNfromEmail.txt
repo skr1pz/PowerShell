@@ -1,0 +1,9 @@
+$mail = get-aduser mdmayer01 -Properties * | Select mail -expandProperty mail
+$mail.Split('@')[0]
+
+
+
+get-aduser mdmayer01 -Properties * | % {$_.mail.Split('@')[0]}
+
+
+get-aduser hsmayer01 -Properties * | % {Set-ADUser $_.sAMAccountName -UserPrincipalName "$($_.mail.Split('@')[0])@uhs.com"}

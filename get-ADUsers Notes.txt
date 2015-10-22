@@ -1,0 +1,273 @@
+PS C:\Users\MDMAYER01> Get-ADUser -Filter * -SearchBase 'OU=UHSSS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Prop
+erties sAMAccountName, employeeID | Select sAMAccountName, employeeID | Export-csv .\SAM_employeeID_UHSSS_Users.csv
+
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {Name -eq "Test X. Test"} -SearchBase 'OU=District 010,OU=UHS Users,DC=int,DC=
+uhs,DC=com' -Properties sAMAccountName, employeeID
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter * -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Proper
+ties sAMAccountName, employeeID, mail | FT sAMAccountName, employeeID, mail -A
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter * -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Proper
+ties * | Where-Object {$_.employeeID -eq $null} | Select sAMAccountName, employeeID | FT sAMAccountName, employeeID -Aut
+oSize
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {(Enabled -eq “True”)} -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Proper
+ties sAMAccountName, employeeID | Where-Object {$_.employeeID -eq $null} | Select sAMAccountName, employeeID | FT sAMAccountName, employeeID -Aut
+oSize
+
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter * -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Proper
+ties * | Where-Object {$_.employeeID -eq $null} | FT sAMAccountName, employeeID -AutoSize
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter * -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Proper
+ties * | Where-Object {$_.employeeID -eq $null} | Select sAMAccountName | Measure-Object
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {Enabled -eq "False"} -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -SearchS
+cope Subtree -Properties sAMAccountName, employeeID | Where-Object {$_.employeeID -eq $null} | Select sAMAccountName, em
+ployeeID
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter * -SearchBase 'OU=UHSSS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Prop
+erties sAMAccountName, employeeID | Where-Object {$_.employeeID -eq $null -and $_.DistinguishedName -notmatch 'OU=,DC=in
+t,DC=uhs,DC=com'} | Select sAMAccountName | Export-CSV .\UHS_SS_UsersEmployeeNum.csv
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter * -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -SearchScope Subtree -Proper
+ties sAMAccountName, telephoneNumber | Where-Object {$_.telephoneNumber -ne $null} | FT sAMAccountName, telephoneNumber
+| Measure-Object
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter ({Enabled -eq "True"}) -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -Search
+Scope Subtree -Properties sAMAccountName, employeeID | Select sAMAccountName, employeeID | Export-CSV .\enabledUHSUsers.
+csv
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {(Initials -Like "*.")} -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -Searc
+hScope Subtree -Properties sAMAccountName, Initials | Select sAMAccountName, Initials | Export-CSV .\uhsInitials.csv
+
+
+
+Import-Module ActiveDirectory
+$csv = Import-Csv c:\users\mdmayer01\sAM_format_table.csv
+foreach ($line in $csv) {
+    $sam = $line.sAMAccountName
+    Get-ADUser -Filter {sAMAccountName -eq $sam} | 
+        Set-ADUser -employeeID $line.employeeID
+}
+
+
+
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter 'employeeID -like "*"' | foreach {Get-ADUser -Filter 'mail -like "*"' | FT sAM
+AccountName}
+
+Find enabled people in disabled OU:
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {enabled -eq "True"} -SearchBase 'OU=00_Users-Disabled,DC=int,DC=uhs,DC=com' -
+Properties * | FT GivenName, Surname, mail, office
+
+
+Move people to correct OU based on Office / District Number:
+
+PS C:\Users\MDMAYER01> Get-ADUser MDMAYER01 -Properties * | % {Move-ADObject -Identity $_.distinguishedName -TargetPath
+"OU=District $($_.Office),OU=UHS Users,DC=int,DC=uhs,DC=com"}
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {enabled -eq "True"} -SearchBase 'OU=00_Users-Disabled,DC=int,DC=uhs,DC=com' -
+Properties * | % {Move-ADObject -Identity $_.distinguishedName -TargetPath "OU=District $($_.Office),OU=UHS Users,DC=int,
+DC=uhs,DC=com"}
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {enabled -eq "True"} -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -
+Properties * | % {Move-ADObject -Identity $_.distinguishedName -TargetPath "OU=District $($_.Office),OU=UHS Users,DC=int,
+DC=uhs,DC=com"}
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {enabled -eq "True"} -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -Properti
+es * | ? {$_.Office -eq $null} | FT GivenName, Surname, mail, office
+
+
+OU=UHS Users,DC=int,DC=uhs,DC=com
+
+OU=UHSSS Users,DC=int,DC=uhs,DC=com
+
+
+PS C:\Users\MDMAYER01> Get-ADUser -Filter {enabled -eq "True"} -SearchBase 'OU=UHS Users,DC=int,DC=uhs,DC=com' -Properti
+es * | ? {$_.Office -like "Dist*"} | FT GivenName, Surname, mail, office
+
+
+
+Find users not updated by Workday script:
+
+PS C:\Users\MDMAYER01> $OU | % {Get-ADUser -Filter {(enabled -eq "True")} -SearchBase $_ -Properties *} | ? {$_.Office -
+like "Dist*"} | FT sAMAccountName,Office
+
+
+
+
+
+PS C:\Users\MDMAYER01> $OU | % {Get-ADUser -Filter {(enabled -eq "True")} -SearchBase $_ -Properties *} | ? {$_.Office -
+eq $null} | FT sAMAccountName,Office
+
+sAMAccountName                                              Office
+--------------                                              ------
+SXREED01
+MJMARKS01
+CJYOUNG01
+RMLIBAO01
+TXTEST01
+RLGUETTE01
+DFGUTIER01
+CHSTEWAR01
+VLARINTA01
+DRWEBB01
+CXDARY01
+MTCLINGA01
+PWHARBAN01
+AXCHIPER01
+ACTRINID01
+LMTHOMAS01
+UHSSSScan
+SSSMELLE01
+JCROMERO01
+
+
+
+
+
+
+
+
+
+
+Find Object Types:
+
+Get-ADUser -Filter {mail -eq "mdmayer@uhs.com"} -Properties * | Select mail | % {$_.mail.GetType()}
+
+PS C:\Users\MDMAYER01> Import-CSV \\iUHSPRD1\root\vendors\workday\UHSEMPS.csv | % {$_.Email.GetType()}
+
+
+Convert String to INT:
+
+$employee_ID = [int]$employee_ID
+
+
+
+Get CSV headers:
+
+
+PS C:\Users\MDMAYER01> Import-CSV \\iUHSPRD1\root\vendors\workday\UHSEMPS.csv | Get-member -MemberType 'NoteProperty' | Select-Object -ExpandProperty 'Name'
+
+Import-CSV -Path C:\users\mdmayer01\uhsemps.csv | Get-member -MemberType 'NoteProperty' | Select-Object -ExpandProperty 'Name' | foreach {If(-not $_ -eq ""){$_ = " "}}
+
+
+Measure the number of characters:
+
+$string | measure-object –character
+
+
+Check if Null:
+
+PS C:\Users\MDMAYER01> $er = import-csv C:\users\mdmayer01\uhsemps.csv | foreach {$_.middle_Name}
+
+PS C:\Users\MDMAYER01> [string]::IsNullOrEmpty($er)
+True
+
+Create a range of IPs:
+
+PS C:\Users\MDMAYER01> 1..100 | %{"192.168.1.$_"}
+
+
+
+SELECT `SAM_employeeID_UHS_Users$`.sAMAccountName,`Lotus_List$`.`Employee Id`  
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`  
+RIGHT JOIN `C:\Users\MDMAYER01\SAM_employeeID_UHS_Users.xlsx`.`SAM_employeeID_UHS_Users$` `SAM_employeeID_UHS_Users$`  
+ON UCASE(`Lotus_List$`.`Short Name`) = UCASE(`SAM_employeeID_UHS_Users$`.sAMAccountName)  
+WHERE (`SAM_employeeID_UHS_Users$`.employeeID is NULL)
+
+
+
+SELECT `UHS_SS_UsersEmployeeNum$`.sAMAccountName, `Lotus_List$`.`Employee Id`
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`
+RIGHT JOIN`C:\Users\MDMAYER01\UHS_SS_UsersEmployeeNum.xlsx`.`UHS_SS_UsersEmployeeNum$` `UHS_SS_UsersEmployeeNum$`
+ON UCASE(`Lotus_List$`.`Short Name`) = UCASE(`UHS_SS_UsersEmployeeNum$`.sAMAccountName)
+
+
+SELECT `UHSUsersEmployeeNum$`.sAMAccountName, `Lotus_List$`.`Employee Id`
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`
+RIGHT JOIN`C:\Users\MDMAYER01\UHSUsersEmployeeNum.xlsx`.`UHSUsersEmployeeNum$` `UHSUsersEmployeeNum$`
+ON UCASE(`Lotus_List$`.`Short Name`) = UCASE(`UHSUsersEmployeeNum$`.sAMAccountName)
+
+
+SELECT `UHS_SS_UsersEmployeeNum$`.sAMAccountName
+FROM `C:\Users\MDMAYER01\UHS_SS_UsersEmployeeNum.xlsx`.`UHS_SS_UsersEmployeeNum$` `UHS_SS_UsersEmployeeNum$`
+
+SELECT `UHSUsersEmployeeNum$`.sAMAccountName
+FROM `C:\Users\MDMAYER01\UHSUsersEmployeeNum.xlsx`.`UHSUsersEmployeeNum$` `UHSUsersEmployeeNum$`
+
+
+SELECT `Lotus_List$`.DisplayName, `Lotus_List$`.Telephone, `Lotus_List$`.`Short Name`, `Lotus_List$`.`Email Address`
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`
+
+
+SELECT `ISSupportEmployeeNum$`.sAMAccountName, `Lotus_List$`.`DisplayName`
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`
+RIGHT JOIN `C:\Users\MDMAYER01\ISSupportEmployeeNum.xlsx`.`ISSupportEmployeeNum$` `ISSupportEmployeeNum$`
+ON UCASE(`Lotus_List$`.`Short Name`) = UCASE(`ISSupportEmployeeNum$`.sAMAccountName)
+
+
+SELECT `UHS_SS_UsersEmployeeNum$`.sAMAccountName
+FROM `C:\Users\MDMAYER01\UHS_SS_UsersEmployeeNum.xlsx`.`UHS_SS_UsersEmployeeNum$` `UHS_SS_UsersEmployeeNum$`
+
+
+SELECT `UHS_SS_UsersEmployeeNum$`.sAMAccountName, `Lotus_List$`.`Telephone`
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`
+RIGHT JOIN `C:\Users\MDMAYER01\UHS_SS_UsersEmployeeNum.xlsx`.`UHS_SS_UsersEmployeeNum$` `UHS_SS_UsersEmployeeNum$`
+ON UCASE(`Lotus_List$`.`Short Name`) = UCASE(`UHS_SS_UsersEmployeeNum$`.sAMAccountName)
+
+SELECT `UHS_SS_UsersEmployeeNum$`.sAMAccountName, `Lotus_List$`.`Telephone`
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`
+RIGHT JOIN `C:\Users\MDMAYER01\UHS_SS_UsersEmployeeNum.xlsx`.`UHS_SS_UsersEmployeeNum$` `UHS_SS_UsersEmployeeNum$`
+ON UCASE(`Lotus_List$`.`Short Name`) = UCASE(`UHS_SS_UsersEmployeeNum$`.sAMAccountName)
+
+
+SELECT `UHSUsersEmployeeNum$`.sAMAccountName, `Lotus_List$`.`Full Name`
+FROM `C:\USERS\MDMAYER01\Lotus_List.xlsx`.`Lotus_List$` `Lotus_List$`
+INNER JOIN`C:\Users\MDMAYER01\UHSUsersEmployeeNum.xlsx`.`UHSUsersEmployeeNum$` `UHSUsersEmployeeNum$`
+ON UCASE(`Lotus_List$`.`Short Name`) = UCASE(`UHSUsersEmployeeNum$`.sAMAccountName)
+
+
+
+SELECT `UHSEMPS$`.Employee_ID, `UHSEMPS$`.Employee_Status
+FROM `C:\Users\MDMAYER01\UHSEMPS.xlsx`.`UHSEMPS$` `UHSEMPS$`
+
+SELECT `enabledUHSUsers$`.employeeID, `enabledUHSUsers$`.sAMAccountName
+FROM `C:\Users\MDMAYER01\enabledUHSUsers.xlsx`.`enabledUHSUsers$` `enabledUHSUsers$`
+
+
+
+
+SELECT `enabledUHSUsers$`.sAMAccountName
+FROM `C:\Users\MDMAYER01\enabledUHSUsers.xlsx`.`enabledUHSUsers$` `enabledUHSUsers$`
+INNER JOIN `C:\Users\MDMAYER01\UHSEMPS.xlsx`.`UHSEMPS$` `UHSEMPS$`
+ON `UHSEMPS$`.Employee_ID = `enabledUHSUsers$`.employeeID
+WHERE `UHSEMPS$`.Employee_Status LIKE 'T'
+
+
+
+SELECT DISTINCT `enabledUHSUsers$`.sAMAccountName
+FROM `C:\Users\MDMAYER01\enabledUHSUsers.xlsx`.`enabledUHSUsers$` `enabledUHSUsers$`
+INNER JOIN `C:\Users\MDMAYER01\UHSEMPS.xlsx`.`UHSEMPS$` `UHSEMPS$`
+ON `UHSEMPS$`.Employee_ID = `enabledUHSUsers$`.employeeID
+WHERE `UHSEMPS$`.Employee_Status LIKE 'T'
+AND `enabledUHSUsers$`.sAMAccountName NOT IN 
+(SELECT `enabledUHSUsers$`.sAMAccountName
+FROM `C:\Users\MDMAYER01\enabledUHSUsers.xlsx`.`enabledUHSUsers$` `enabledUHSUsers$`
+INNER JOIN `C:\Users\MDMAYER01\UHSEMPS.xlsx`.`UHSEMPS$` `UHSEMPS$`
+ON `UHSEMPS$`.Employee_ID = `enabledUHSUsers$`.employeeID
+WHERE `UHSEMPS$`.Employee_Status LIKE 'A')

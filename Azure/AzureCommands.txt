@@ -1,0 +1,55 @@
+https://azure.microsoft.com/en-us/documentation/articles/powershell-install-configure/
+
+$cred = Get-Credential
+Add-AzureAccount -Credential $cred -Tenant 39788527-8d04-48dd-b7b7-1b87b237519f
+
+Get-AzureSubscription
+
+Select-AzureSubscription -SubscriptionName 'Pay-As-You-Go'
+
+Get-AzureVNetConfig -ExportToFile C:\vnetconfig.netcfg
+
+Get-AzureVNetGateway -VNetName 'Azure-CL-Central'
+
+Get-AzureVNetGatewayIPsecParameters -VNetName 'Azure-CL-Central' -LocalNetworkSiteName 'FortiGate Central'
+
+Get-AzureVNetGatewayKey -VNetName 'Azure-CL-Central' -LocalNetworkSiteName 'FortiGate Central'
+
+Set-AzureVNetGatewayKey -VNetName "Azure-CL-Central" -LocalNetworkSiteName "FortiGate Central" -SharedKey "6RoZzUpG7cNbm4f"
+
+Set Static IP:
+
+Get-AzureVM -ServiceName UHSADFS -Name UHSADFS02 | Set-AzureStaticVNetIP -IPAddress "172.0.20.5" | Update-AzureVM
+
+http://michaelwasham.com/windows-azure-powershell-reference-guide/setting-static-ip-addresses-in-a-virtual-network/
+
+Set VM Size:
+
+Get-AzureVM -ServiceName UHSADFS -Name UHSADFS01 | Set-AzureVMSize -InstanceSize "Large" | Update-AzureVM
+
+
+__________________________
+
+#Clear O365 Users
+
+Connect-MSOLService
+
+Set-MsolDirSyncEnabled –EnableDirSync $false
+
+get-msoluser -All | ? {$_.LastDirSyncTime -like '*'} | % {Remove-MsolUser -UserPrincipalName $_.UserPrincipalName -Force} <-clear AAD
+
+Get-MSOLUser -All | Select UserPrincipalName,WhenCreated | ? {$_.WhenCreated -like '*9/21/2015*'} | % {Remove-MSOLUser -UserPrincipalName $_.UserPrincipalName -Force -Debug -Verbose}
+
+Get-MSOLUser -maxresults 100 | Select * | ? {$_.WhenCreated -like '*9/21/2015*'} | Select UserPrincipalName | Remove-msoluser -force
+
+#Count objects: 
+(get-msoluser -returndeletedusers -all | Select UserPrincipalName).Count
+
+#Empty Recycle Bin deletedUsers
+
+get-msoluser -returndeletedusers -all | remove-msoluser -removefromrecyclebin -force
+
+Get-MSOLUser -all | Select * | ? {$_.WhenCreated -like '*9/21/2015*'} | Select UserPrincipalName | Remove-MSOLUser -Force
+
+UHS!0mdm
+

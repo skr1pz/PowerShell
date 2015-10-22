@@ -1,0 +1,10 @@
+get-aduser -Filter {(enabled -eq $true) -and (mail -like '*')} -Properties * | % {Set-ADUser $_.sAMAccountName -Add @{'proxyAddresses'=$_.mail}}
+
+
+Clear Addresses:
+
+
+set-aduser -identity mdmayer01 -Clear proxyAddresses
+
+
+get-aduser -Filter {proxyAddresses -like '*'} -Properties * | % {set-aduser $_.sAMAccountName -Clear proxyAddresses}

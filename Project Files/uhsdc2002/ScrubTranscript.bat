@@ -1,0 +1,1 @@
+Forfiles.exe -p C:\Scripts -m ADModify*.txt -d -5 -c "Cmd.exe /C del @path"

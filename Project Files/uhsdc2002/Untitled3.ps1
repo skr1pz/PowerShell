@@ -1,0 +1,1 @@
+﻿Get-ADOrganizationalUnit -filter {Name -like "District 037"} -Properties * | % {Set-ADOrganizationalUnit -Identity "OU=District 387,OU=UHSSS Users,DC=int,DC=uhs,DC=com" -City $_.City -Country $_.Country -PostalCode $_.PostalCode -State $_.State -StreetAddress $_.StreetAddress -Description $_.Description}

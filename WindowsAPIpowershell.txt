@@ -1,0 +1,5 @@
+Get-WmiObject -Class Win32_MappedLogicalDisk
+
+Get-WmiObject -Class Win32_MappedLogicalDisk
+
+Get-WmiObject -List

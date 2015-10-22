@@ -1,0 +1,6 @@
+Try { $exists = Get-ADUser -LDAPFilter "(sAMAccountName=$sam)" }
+Catch { }
+If ($exists)
+{
+     Set-ADUser -Identity $sam department=$department
+}

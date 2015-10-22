@@ -1,0 +1,4 @@
+ConvertFrom-Json -File ~\AppData\R*\M*\F*\P*\*\sessionstore.js -Type PSObject -EA 0 |
+Select -Expand Windows | Select -Expand Tabs | 
+Where { !$_.hidden } | ForEach { @($_.Entries)[-1] } | 
+Select Title, Url

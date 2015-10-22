@@ -1,0 +1,1 @@
+PS C:\Users\MDMAYER01> get-aduser -Filter {mail -like "* @uhs.com"} -Properties * | foreach {Set-ADUser $_.sAMAccountName -email $($_.mail -replace '\s','')}

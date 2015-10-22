@@ -1,0 +1,2 @@
+PS C:\Users\MDMAYER01> get-aduser -Filter {userPrincipalName -notlike "*"} -Properties * | % {Set-ADUser $_.sAMAccountNa
+me -UserPrincipalName "$($_.sAMAccountName)@int.uhs.com"}

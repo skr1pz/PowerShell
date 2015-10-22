@@ -1,0 +1,10 @@
+$inM = Import-CSV .\blah.csv
+$inM | % {$_ | Select -ExpandProperty '00004'} | % {Get-ADUser -Filter {employeeID -like $_} -Prperties *}
+
+
+$(Import-Csv C:\createAD.csv) | % {$_ | Select -ExpandProperty 'samAccountName'} | % {Get-ADUser $_}
+
+
+
+$(Import-Csv C:\createAD.csv) | % {$_ | Select -ExpandProperty 'samAccountName'} | % {Get-ADUser
+$_ -Properties * } | %{Move-ADObject -Identity $_.distinguishedName -TargetPath "OU=GroupMailboxes,OU=All Users,DC=int,DC=uhs,DC=com"}
