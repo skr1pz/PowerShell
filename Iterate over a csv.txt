@@ -8,3 +8,6 @@ $(Import-Csv C:\createAD.csv) | % {$_ | Select -ExpandProperty 'samAccountName'}
 
 $(Import-Csv C:\createAD.csv) | % {$_ | Select -ExpandProperty 'samAccountName'} | % {Get-ADUser
 $_ -Properties * } | %{Move-ADObject -Identity $_.distinguishedName -TargetPath "OU=GroupMailboxes,OU=All Users,DC=int,DC=uhs,DC=com"}
+
+
+$(Import-CSV C:\DominoEmail.csv) | % {$_ | Select -ExpandProperty 'Email'} | % {Get-ADUser -Filter {emailaddress -Like $_} | Select Email,sAMAccountName | Export-Csv C:\DominoEmailParsed.csv -Append}
