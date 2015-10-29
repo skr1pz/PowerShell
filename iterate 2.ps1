@@ -1,0 +1,1 @@
+﻿$(Import-CSV C:\DominoDistricts.csv) | % {$_ | Select -ExpandProperty 'Email'} | % {Get-ADUser -Filter {emailaddress -Like $_} | Select sAMAccountName | Export-Csv C:\DisplayName3.csv -Append}
