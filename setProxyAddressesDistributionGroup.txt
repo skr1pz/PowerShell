@@ -1,0 +1,3 @@
+PS C:\Windows\system32> Get-ADGroup -Filter {mail -like "*"} -SearchBase "OU=Distribution Lists,DC=int,DC=uhs,DC=com" -Properties * | % {Set-ADGroup -Identity $_ -Clear proxyAddresses}
+
+PS C:\Windows\system32> Get-ADGroup -Filter {mail -like "*"} -SearchBase "OU=Distribution Lists,DC=int,DC=uhs,DC=com" -Properties * | % {Set-ADGroup -Identity $_ -Add @{'proxyAddresses' = $("SMTP:" + $_.mail)}}
